@@ -3,16 +3,18 @@
 import os
 import glob
 import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
 from PIL import Image
 import numpy as np
 import utl
+import cv2
 
 # reading in images
 im_list = []
 images = glob.glob(os.path.join("./test_images/", "*.jpg"))
 num_images = len(images)
-fig, axs = plt.subplots(len(images), 6, figsize=(5, 8))
+num_plots = 6
+fig, axs = plt.subplots(len(images), num_plots, figsize=(16, 8))
+plt.subplots_adjust(wspace=0.01, hspace=0.01)
 for i in range(num_images):
     img = np.array(Image.open(images[i]))
     im_list.append(img)
@@ -43,7 +45,7 @@ for i in range(num_images):
     axs[i, 3].imshow(edges_im_list[i], cmap='gray')
     axs[i, 3].axis("off")
 
-# create a masked edges image
+# create a masked edged image
 mask = np.zeros_like(edges_im_list[0])
 ignore_mask_color = 255
 im_shape = edges_im_list[0].shape
@@ -63,17 +65,13 @@ theta = np.pi/180
 threshold = 65
 min_line_length = 30
 max_line_gap = 2
-
 hough_im_list = []
-blank_im_list = []
 for i in range(num_images):
-    blank_im_list.append(np.copy(masked_im_list[i])*0)
-    lines = utl.hough_lines(masked_im_list[i], rho, theta, threshold, np.array([]), min_line_length, max_line_gap)
-
-    for line in lines:
-        utl.draw_lines(blank_im_list[i], lines, (255, 0, 0), 10)
-
-    hough_im_list.append(np.dstack((edges_im_list[i], edges_im_list[i], edges_im_list[i])))
+    lines = cv2.HoughLinesP(masked_im_list[i], rho, theta, threshold, np.array([]), min_line_length, max_line_gap)
+    line_img = np.zeros((masked_im_list[i].shape[0], masked_im_list[i].shape[1], 3), dtype=np.uint8)
+    utl.draw_lines(line_img, lines, thickness=10)
+    color_edges = np.dstack((masked_im_list[i], masked_im_list[i], masked_im_list[i]))
+    hough_im_list.append(utl.weighted_img(color_edges, line_img))
     axs[i, 5].imshow(hough_im_list[i])
     axs[i, 5].axis("off")
 
