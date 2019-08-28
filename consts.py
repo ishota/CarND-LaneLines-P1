@@ -19,6 +19,6 @@ VERTICES = np.array([[(30, 540), (460, 300), (499, 300), (930, 540)]], dtype=np.
 # parameters for Hough Transform
 RHO = 1
 THETA = np.pi / 180
-THRESHOLD = 15
-MIN_LINE_LENGTH = 30
-MAX_LINE_GAP = 80
+THRESHOLD = 30
+MIN_LINE_LENGTH = 80
+MAX_LINE_GAP = 100
