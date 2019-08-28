@@ -7,6 +7,7 @@ from PIL import Image
 import numpy as np
 import utl
 import cv2
+from consts import *
 
 
 def main():
@@ -14,9 +15,8 @@ def main():
     im_list = []
     images = glob.glob(os.path.join("./test_images/", "*.jpg"))
     num_images = len(images)
-    num_plots = 6
-    fig, axs = plt.subplots(len(images), num_plots, figsize=(16, 8))
-    plt.subplots_adjust(wspace=0.01, hspace=0.01)
+    fig, axs = plt.subplots(len(images), NUM_PLOTS, figsize=FIGURE_SIZE)
+    plt.subplots_adjust(wspace=W_SPACE, hspace=H_SPACE)
     for i in range(num_images):
         img = np.array(Image.open(images[i]))
         im_list.append(img)
@@ -31,19 +31,16 @@ def main():
         axs[i, 1].axis("off")
 
     # define a kernel size and apply Gaussian smoothing
-    kernel_size = 5
     gaussian_im_list = []
     for i in range(num_images):
-        gaussian_im_list.append(utl.gaussian_blur(gray_im_list[i], kernel_size))
+        gaussian_im_list.append(utl.gaussian_blur(gray_im_list[i], KERNEL_SIZE))
         axs[i, 2].imshow(gaussian_im_list[i], cmap='gray')
         axs[i, 2].axis("off")
 
     # applies the Canny transform
     edges_im_list = []
-    low_threshold = 50
-    high_threshold = 150
     for i in range(num_images):
-        edges_im_list.append(utl.canny(gaussian_im_list[i], low_threshold, high_threshold))
+        edges_im_list.append(utl.canny(gaussian_im_list[i], LOW_THRESHOLD, HIGH_THRESHOLD))
         axs[i, 3].imshow(edges_im_list[i], cmap='gray')
         axs[i, 3].axis("off")
 
@@ -59,17 +56,11 @@ def main():
         axs[i, 4].axis("off")
 
     # Define the Hough transform parameters
-    # Make a blank the same size as our image to draw on
-    rho = 1
-    theta = np.pi / 180
-    threshold = 65
-    min_line_length = 30
-    max_line_gap = 2
     hough_im_list = []
     for i in range(num_images):
-        lines = cv2.HoughLinesP(masked_im_list[i], rho, theta, threshold, np.array([]), min_line_length, max_line_gap)
+        lines = cv2.HoughLinesP(masked_im_list[i], RHO, THETA, THRESHOLD, np.array([]), MIN_LINE_LENGTH, MAX_LINE_GAP)
         line_img = np.zeros((masked_im_list[i].shape[0], masked_im_list[i].shape[1], 3), dtype=np.uint8)
-        utl.draw_lines(line_img, lines, thickness=10)
+        utl.draw_lines(line_img, lines, thickness=5)
         color_edges = np.dstack((masked_im_list[i], masked_im_list[i], masked_im_list[i]))
         hough_im_list.append(utl.weighted_img(color_edges, line_img))
         axs[i, 5].imshow(hough_im_list[i])
