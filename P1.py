@@ -56,12 +56,13 @@ def main():
         lines = cv2.HoughLinesP(masked_im_list[i], RHO, THETA, THRESHOLD, np.array([]), MIN_LINE_LENGTH, MAX_LINE_GAP)
         line_img = np.zeros((masked_im_list[i].shape[0], masked_im_list[i].shape[1], 3), dtype=np.uint8)
         utl.draw_lines(line_img, lines, thickness=5)
-        color_edges = np.dstack((masked_im_list[i], masked_im_list[i], masked_im_list[i]))
+        color_edges = np.dstack((gray_im_list[i], gray_im_list[i], gray_im_list[i]))
         hough_im_list.append(utl.weighted_img(color_edges, line_img))
         axs[i, 5].imshow(hough_im_list[i])
         axs[i, 5].axis("off")
 
     plt.show()
+    plt.savefig('test_images_output/img_array.png')
 
 
 if __name__ == '__main__':
