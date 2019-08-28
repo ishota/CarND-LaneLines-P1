@@ -4,7 +4,6 @@ import os
 import glob
 import matplotlib.pyplot as plt
 from PIL import Image
-import numpy as np
 import utl
 import cv2
 from consts import *
@@ -45,13 +44,9 @@ def main():
         axs[i, 3].axis("off")
 
     # create a masked edged image
-    im_shape = edges_im_list[0].shape
-    vertices = np.array([[(30, im_shape[0]), (2.4 * im_shape[1] / 5, im_shape[0] / 2),
-                          (2.6 * im_shape[1] / 5, im_shape[0] / 2), (im_shape[1] - 30, im_shape[0])]],
-                        dtype=np.int32)
     masked_im_list = []
     for i in range(num_images):
-        masked_im_list.append(utl.region_of_interest(edges_im_list[i], vertices))
+        masked_im_list.append(utl.region_of_interest(edges_im_list[i], VERTICES))
         axs[i, 4].imshow(masked_im_list[i], cmap='gray')
         axs[i, 4].axis("off")
 

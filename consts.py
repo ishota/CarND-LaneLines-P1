@@ -10,14 +10,15 @@ H_SPACE = 0.01
 KERNEL_SIZE = 5
 
 # parameters for Canny transform
-LOW_THRESHOLD = 50
-HIGH_THRESHOLD = 150
+LOW_THRESHOLD = 30
+HIGH_THRESHOLD = 180
 
-# parameters for mask
+# parameters for mask size = 930 x 540
+VERTICES = np.array([[(30, 540), (460, 300), (499, 300), (930, 540)]], dtype=np.int32)
 
 # parameters for Hough Transform
 RHO = 1
 THETA = np.pi / 180
 THRESHOLD = 15
-MIN_LINE_LENGTH = 40
-MAX_LINE_GAP = 20
+MIN_LINE_LENGTH = 30
+MAX_LINE_GAP = 80
