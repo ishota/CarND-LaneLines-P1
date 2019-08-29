@@ -15,10 +15,14 @@ def main():
     # detect lane line
     for n in range(num_frame):
         img_output_dirs = "test_videos/img_" + VID_NAME + "/"
+        if not os.path.exists(img_output_dirs):
+            os.mkdir(img_output_dirs)
         os.makedirs(img_output_dirs)
         image = mpimg.imread(img_output_dirs + VID_NAME + '_' + '{0:03d}.jpg'.format(n))
         plt.imshow(utl.find_lane_line(image))
         vid_output_dirs = "test_videos_output/img_" + VID_NAME
+        if not os.path.exists(vid_output_dirs):
+            os.mkdir(vid_output_dirs)
         os.makedirs(vid_output_dirs)
         plt.savefig('test_videos_output/img_' + VID_NAME + '/' + VID_NAME + '_{0:03d}.jpg'.format(n))
 
