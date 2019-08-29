@@ -125,10 +125,12 @@ def save_frame(video_path, result_dir_path, basename, ext='jpg'):
             return count
 
 
-def convert_frame_to_video(img_path, num_frame, basename, result_dir_path, name, ext='jpg'):
+def convert_frame_to_video(img_path, num_frame, img_basename, result_dir_path, name, ext='jpg'):
     fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')
-    video = cv2.VideoWriter('{}/{}.mp4'.format(result_dir_path, name), fourcc, 20.0, (900, 500))
+    img = cv2.imread(img_path + img_basename + '_000.' + '{}'.format(ext))
+    video = cv2.VideoWriter('{}{}.mp4'.format(result_dir_path, name), fourcc, 20.0, (img.shape[1], img.shape[0]))
 
-    for i in range(1):
-        img = cv2.imread('{}/{}_000.{}'.format(img_path, basename, ext))
+    for i in range(num_frame):
+        img = cv2.imread(img_path + img_basename + '_' + '{0:03d}'.format(i) + '.{}'.format(ext))
+        img = cv2.resize(img, (img.shape[1], img.shape[0]))
         video.write(img)
