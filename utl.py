@@ -1,4 +1,5 @@
 import cv2
+import os
 import numpy as np
 
 
@@ -101,3 +102,33 @@ def weighted_img(img, initial_img, alpha=0.8, beta=1., gamma=0.):
     NOTE: initial_img and img must be the same shape!
     """
     return cv2.addWeighted(initial_img, alpha, img, beta, gamma)
+
+
+def save_frame(video_path, result_dir_path, basename, ext='jpg'):
+    cap = cv2.VideoCapture(video_path)
+
+    if not cap.isOpened():
+        return
+
+    os.makedirs(result_dir_path, exist_ok=True)
+    base_path = os.path.join(result_dir_path, basename)
+
+    count = cap.get(cv2.CAP_PROP_FRAME_COUNT)
+
+    for n in range(int(count)):
+        cap.set(cv2.CAP_PROP_POS_FRAMES, n)
+        digit = len(str(int(cap.get(cv2.CAP_PROP_FRAME_COUNT))))
+        ret, frame = cap.read()
+        if ret:
+            cv2.imwrite('{}_{}.{}'.format(base_path, str(n).zfill(digit), ext), frame)
+        else:
+            return count
+
+
+def convert_frame_to_video(img_path, num_frame, basename, result_dir_path, name, ext='jpg'):
+    fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')
+    video = cv2.VideoWriter('{}/{}.mp4'.format(result_dir_path, name), fourcc, 20.0, (900, 500))
+
+    for i in range(1):
+        img = cv2.imread('{}/{}_000.{}'.format(img_path, basename, ext))
+        video.write(img)
