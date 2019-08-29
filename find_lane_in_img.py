@@ -57,9 +57,9 @@ def main():
         axs[i, 5].imshow(hough_im_list[i])
         axs[i, 5].axis("off")
 
-    plt.show()
-    os.mkdir("test_images_output")
-    plt.savefig('test_images_output/images.png')
+    if not os.path.exists('test_images_output'):
+        os.mkdir('test_images_output')
+    plt.savefig('test_images_output/images.jpg')
 
 
 if __name__ == '__main__':
