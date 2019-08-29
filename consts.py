@@ -24,4 +24,5 @@ MIN_LINE_LENGTH = 80
 MAX_LINE_GAP = 100
 
 # parameters for file name
-VID_NAME = 'solidWhiteRight'
+# VID_NAME = 'solidWhiteRight'
+VID_NAME = 'solidYellowLeft'
