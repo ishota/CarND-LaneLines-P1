@@ -1,6 +1,6 @@
 import cv2
 import os
-import numpy as np
+from consts import *
 
 
 def grayscale(img):
@@ -104,7 +104,17 @@ def weighted_img(img, initial_img, alpha=0.8, beta=1., gamma=0.):
     return cv2.addWeighted(initial_img, alpha, img, beta, gamma)
 
 
-def save_frame(video_path, result_dir_path, basename, ext='jpg'):
+def find_lane_line(img):
+    gray_im = grayscale(img)
+    gaussian_im = gaussian_blur(gray_im, KERNEL_SIZE)
+    edges_im = canny(gaussian_im, LOW_THRESHOLD, HIGH_THRESHOLD)
+    masked_im = region_of_interest(edges_im, VERTICES)
+    line_im = hough_lines(masked_im, RHO, THETA, THRESHOLD, MIN_LINE_LENGTH, MAX_LINE_GAP)
+    hough_im = weighted_img(img, line_im)
+    return hough_im
+
+
+def save_frame(video_path, result_dir_path, basename):
     cap = cv2.VideoCapture(video_path)
 
     if not cap.isOpened():
@@ -120,17 +130,18 @@ def save_frame(video_path, result_dir_path, basename, ext='jpg'):
         digit = len(str(int(cap.get(cv2.CAP_PROP_FRAME_COUNT))))
         ret, frame = cap.read()
         if ret:
-            cv2.imwrite('{}_{}.{}'.format(base_path, str(n).zfill(digit), ext), frame)
+            cv2.imwrite('{}_{}.jpg'.format(base_path, str(n).zfill(digit)), frame)
         else:
-            return count
+            return int(n)
 
 
-def convert_frame_to_video(img_path, num_frame, img_basename, result_dir_path, name, ext='jpg'):
+def convert_frame_to_video(img_path, num_frame, img_basename, result_dir_path):
     fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')
-    img = cv2.imread(img_path + img_basename + '_000.' + '{}'.format(ext))
+    img = cv2.imread(img_path + img_basename + '_000.jpg')
+    name = 'vid_{}'.format(img_basename)
     video = cv2.VideoWriter('{}{}.mp4'.format(result_dir_path, name), fourcc, 20.0, (img.shape[1], img.shape[0]))
 
     for i in range(num_frame):
-        img = cv2.imread(img_path + img_basename + '_' + '{0:03d}'.format(i) + '.{}'.format(ext))
+        img = cv2.imread(img_path + img_basename + '_' + '{0:03d}.jpg'.format(i))
         img = cv2.resize(img, (img.shape[1], img.shape[0]))
         video.write(img)

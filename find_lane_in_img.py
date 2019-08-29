@@ -5,7 +5,6 @@ import glob
 import matplotlib.pyplot as plt
 from PIL import Image
 import utl
-import cv2
 from consts import *
 
 
@@ -53,16 +52,14 @@ def main():
     # Define the Hough transform parameters
     hough_im_list = []
     for i in range(num_images):
-        lines = cv2.HoughLinesP(masked_im_list[i], RHO, THETA, THRESHOLD, np.array([]), MIN_LINE_LENGTH, MAX_LINE_GAP)
-        line_img = np.zeros((masked_im_list[i].shape[0], masked_im_list[i].shape[1], 3), dtype=np.uint8)
-        utl.draw_lines(line_img, lines, thickness=5)
-        color_edges = np.dstack((gray_im_list[i], gray_im_list[i], gray_im_list[i]))
-        hough_im_list.append(utl.weighted_img(color_edges, line_img))
+        line_img = utl.hough_lines(masked_im_list[i], RHO, THETA, THRESHOLD, MIN_LINE_LENGTH, MAX_LINE_GAP)
+        hough_im_list.append(utl.weighted_img(im_list[i], line_img))
         axs[i, 5].imshow(hough_im_list[i])
         axs[i, 5].axis("off")
 
     plt.show()
-    plt.savefig('test_images_output/img_array.png')
+    os.mkdir("test_images_output")
+    plt.savefig('test_images_output/images.png')
 
 
 if __name__ == '__main__':
