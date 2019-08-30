@@ -1,31 +1,20 @@
 # -*- coding: utf-8 -*-
 
 import utl
-import os
-import matplotlib.image as mpimg
-import matplotlib.pyplot as plt
 from consts import *
 
 
 def main():
 
     # divide videos into img
-    num_frame = utl.save_frame('test_videos/' + VID_NAME + '.mp4', 'test_videos/img_' + VID_NAME + '/', VID_NAME)
+    image_list = utl.get_frame_list('test_videos/' + VID_NAME + '.mp4')
 
     # detect lane line
-    for n in range(num_frame):
-        img_output_dirs = "test_videos/img_" + VID_NAME + "/"
-        if not os.path.exists(img_output_dirs):
-            os.mkdir(img_output_dirs)
-        image = mpimg.imread(img_output_dirs + VID_NAME + '_' + '{0:03d}.jpg'.format(n))
-        plt.imshow(utl.find_lane_line(image))
-        vid_output_dirs = "test_videos_output/img_" + VID_NAME
-        if not os.path.exists(vid_output_dirs):
-            os.mkdir(vid_output_dirs)
-        plt.savefig('test_videos_output/img_' + VID_NAME + '/' + VID_NAME + '_{0:03d}.jpg'.format(n))
+    for n, image in enumerate(image_list):
+        image_list[n] = utl.find_lane_line(image)
 
     # create video from img
-    utl.convert_frame_to_video('test_videos_output/img_' + VID_NAME + '/', num_frame, VID_NAME, 'test_videos_output/')
+    utl.convert_frame_to_video(image_list, VID_NAME, 'test_videos_output/')
 
 
 if __name__ == '__main__':

@@ -1,5 +1,4 @@
 import cv2
-import os
 from consts import *
 
 
@@ -68,7 +67,7 @@ def draw_lines(img, lines, color=None, thickness=2):
     this function with the weighted_img() function below
     """
     if color is None:
-        color = [255, 0, 0]
+        color = [0, 0, 255]
     for line in lines:
         for x1, y1, x2, y2 in line:
             cv2.line(img, (x1, y1), (x2, y2), color, thickness)
@@ -114,34 +113,27 @@ def find_lane_line(img):
     return hough_im
 
 
-def save_frame(video_path, result_dir_path, basename):
+def get_frame_list(video_path):
     cap = cv2.VideoCapture(video_path)
-
     if not cap.isOpened():
         return
-
-    os.makedirs(result_dir_path, exist_ok=True)
-    base_path = os.path.join(result_dir_path, basename)
-
     count = cap.get(cv2.CAP_PROP_FRAME_COUNT)
-
+    image_list = []
     for n in range(int(count)):
         cap.set(cv2.CAP_PROP_POS_FRAMES, n)
-        digit = len(str(int(cap.get(cv2.CAP_PROP_FRAME_COUNT))))
         ret, frame = cap.read()
         if ret:
-            cv2.imwrite('{}_{}.jpg'.format(base_path, str(n).zfill(digit)), frame)
+            image_list.append(frame)
         else:
-            return int(n)
+            return image_list
 
 
-def convert_frame_to_video(img_path, num_frame, img_basename, result_dir_path):
+def convert_frame_to_video(image_list, name, result_dir_path):
+
     fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')
-    img = cv2.imread(img_path + img_basename + '_000.jpg')
-    name = 'vid_{}'.format(img_basename)
-    video = cv2.VideoWriter('{}{}.mp4'.format(result_dir_path, name), fourcc, 20.0, (img.shape[1], img.shape[0]))
+    shape1 = image_list[0].shape[1]
+    shape2 = image_list[0].shape[0]
+    video = cv2.VideoWriter('{}{}.mp4'.format(result_dir_path, name), fourcc, 20.0, (shape1, shape2))
 
-    for i in range(num_frame):
-        img = cv2.imread(img_path + img_basename + '_' + '{0:03d}.jpg'.format(i))
-        img = cv2.resize(img, (img.shape[1], img.shape[0]))
-        video.write(img)
+    for image in image_list:
+        video.write(image)
