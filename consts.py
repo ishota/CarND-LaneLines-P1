@@ -13,14 +13,14 @@ KERNEL_SIZE = 5
 LOW_THRESHOLD = 20
 HIGH_THRESHOLD = 200
 
-# parameters for mask (img size = 930 x 540)
-VERTICES = np.array([[(20, 540), (460, 320), (500, 320), (910, 540)]], dtype=np.int32)
+# parameters for mask (img size = 960 x 540)
+VERTICES = np.array([[(20, 540), (460, 320), (500, 320), (940, 540)]], dtype=np.int32)
 
 # parameters for Hough Transform
 RHO = 1
 THETA = np.pi / 180
-THRESHOLD = 15
-MIN_LINE_LENGTH = 40
+THRESHOLD = 30
+MIN_LINE_LENGTH = 20
 MAX_LINE_GAP = 20
 
 # parameters for file name

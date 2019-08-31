@@ -57,7 +57,7 @@ def main():
 
     # compute a line image
     for i in range(num_images):
-        line_img = utl.hough_lines(masked_im_list[i], RHO, THETA, THRESHOLD, MIN_LINE_LENGTH, MAX_LINE_GAP)
+        line_img = utl.hough_lines(masked_im_list[i], RHO, THETA, THRESHOLD, MIN_LINE_LENGTH, MAX_LINE_GAP, None, IS_IMPROVED)
         axs[plot_count, i].imshow(line_img)
         axs[plot_count, i].axis("off")
     plot_count += 1
