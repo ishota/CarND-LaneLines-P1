@@ -49,7 +49,7 @@ def region_of_interest(img, vertices):
     return masked_image
 
 
-def draw_lines(img, lines, color=None, thickness=2):
+def draw_lines(img, lines, color=None, thickness=2, is_improved=False):
     """
     NOTE: this is the function you might want to use as a starting point once you want to
     average/extrapolate the line segments you detect to map out the full
@@ -66,14 +66,22 @@ def draw_lines(img, lines, color=None, thickness=2):
     If you want to make the lines semi-transparent, think about combining
     this function with the weighted_img() function below
     """
-    if color is None:
-        color = [0, 0, 255]
-    for line in lines:
-        for x1, y1, x2, y2 in line:
-            cv2.line(img, (x1, y1), (x2, y2), color, thickness)
+    if is_improved:
+        print('apply improved method')
+        if color is None:
+            color = [255, 0, 0]
+        for line in lines:
+            for x1, y1, x2, y2 in line:
+                cv2.line(img, (x1, y1), (x2, y2), color, thickness)
+    else:
+        if color is None:
+            color = [255, 0, 0]
+        for line in lines:
+            for x1, y1, x2, y2 in line:
+                cv2.line(img, (x1, y1), (x2, y2), color, thickness)
 
 
-def hough_lines(img, rho, theta, threshold, min_line_len, max_line_gap):
+def hough_lines(img, rho, theta, threshold, min_line_len, max_line_gap, line_color=None, is_improved=False):
     """
     `img` should be the output of a Canny transform.
 
@@ -82,7 +90,11 @@ def hough_lines(img, rho, theta, threshold, min_line_len, max_line_gap):
     lines = cv2.HoughLinesP(img, rho, theta, threshold, np.array([]), minLineLength=min_line_len,
                             maxLineGap=max_line_gap)
     line_img = np.zeros((img.shape[0], img.shape[1], 3), dtype=np.uint8)
-    draw_lines(line_img, lines)
+    if line_color is None:
+        draw_lines(line_img, lines, is_improved=is_improved)
+    else:
+        draw_lines(line_img, lines, line_color, is_improved=is_improved)
+
     return line_img
 
 
@@ -103,12 +115,12 @@ def weighted_img(img, initial_img, alpha=0.8, beta=1., gamma=0.):
     return cv2.addWeighted(initial_img, alpha, img, beta, gamma)
 
 
-def find_lane_line(img):
+def find_lane_line(img, line_color=None, is_improved=False):
     gray_im = grayscale(img)
     gaussian_im = gaussian_blur(gray_im, KERNEL_SIZE)
     edges_im = canny(gaussian_im, LOW_THRESHOLD, HIGH_THRESHOLD)
     masked_im = region_of_interest(edges_im, VERTICES)
-    line_im = hough_lines(masked_im, RHO, THETA, THRESHOLD, MIN_LINE_LENGTH, MAX_LINE_GAP)
+    line_im = hough_lines(masked_im, RHO, THETA, THRESHOLD, MIN_LINE_LENGTH, MAX_LINE_GAP, line_color, is_improved)
     hough_im = weighted_img(img, line_im)
     return hough_im
 
