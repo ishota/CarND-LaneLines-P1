@@ -49,6 +49,26 @@ def region_of_interest(img, vertices):
     return masked_image
 
 
+def separate_line_dots(img, lines, dividing_line):
+    left_x = []
+    left_y = []
+    right_x = []
+    right_y = []
+    for line in lines:
+        for x1, y1, x2, y2 in line:
+            if x1 <= img.shape[1] / 2 and x2 <= img.shape[1] / 2:
+                left_x.append(x1)
+                left_y.append(y1)
+                left_x.append(x2)
+                left_y.append(y2)
+            else:
+                right_x.append(x1)
+                right_y.append(y1)
+                right_x.append(x2)
+                right_y.append(y2)
+    return np.array(left_x), np.array(left_y), np.array(right_x), np.array(right_y)
+
+
 def draw_lines(img, lines, color=None, thickness=10, is_improved=False, x_range=[20, 910]):
     """
     NOTE: this is the function you might want to use as a starting point once you want to
@@ -70,31 +90,7 @@ def draw_lines(img, lines, color=None, thickness=10, is_improved=False, x_range=
         if color is None:
             color = [255, 0, 0]
 
-        # separate line dots left and right
-        left_lines = []
-        right_lines = []
-        left_x = []
-        left_y = []
-        right_x = []
-        right_y = []
-        for line in lines:
-            for x1, y1, x2, y2 in line:
-                if x1 <= img.shape[1]/2 and x2 <= img.shape[1]/2:
-                    left_lines.append(line)
-                    left_x.append(x1)
-                    left_y.append(y1)
-                    left_x.append(x2)
-                    left_y.append(y2)
-                else:
-                    right_lines.append(line)
-                    right_x.append(x1)
-                    right_y.append(y1)
-                    right_x.append(x2)
-                    right_y.append(y2)
-        left_x = np.array(left_x)
-        left_y = np.array(left_y)
-        right_x = np.array(right_x)
-        right_y = np.array(right_y)
+        left_x, left_y, right_x, right_y = separate_line_dots(img, lines, img.shape[1]/2)
 
         # liner approximation method
         if left_x.shape[0] > 2 and left_y.shape[0] > 2:
