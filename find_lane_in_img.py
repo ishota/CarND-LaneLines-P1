@@ -31,7 +31,7 @@ def main():
         axs[plot_count, i].axis("off")
     plot_count += 1
 
-    # define a kernel size and apply Gaussian smoothing
+    # apply Gaussian smoothing
     gaussian_im_list = []
     for i in range(num_images):
         gaussian_im_list.append(utl.gaussian_blur(gray_im_list[i], KERNEL_SIZE))
